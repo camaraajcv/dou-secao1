@@ -16,12 +16,16 @@ def get_dou_data(data_str):
     # Exibir um trecho do HTML para depuração
     html_sample = soup.prettify()[:2000]  # Pegamos os primeiros 2000 caracteres do HTML
     
-    # Encontrar todos os itens da lista de publicações
-    sumarios = soup.find_all('li', class_='item')
+    # Encontrar a estrutura correta dentro de <div id="hierarchy_content">
+    hierarchy_content = soup.find("div", id="hierarchy_content")
+    if not hierarchy_content:
+        return None, response.status_code, html_sample
+    
+    sumarios = hierarchy_content.find_all('li', class_='folder level1')
     
     resultado = []
     for item in sumarios:
-        titulo = item.find('a').get_text(strip=True) if item.find('a') else "Sem título"
+        titulo = item.find('span', class_='titulo').get_text(strip=True) if item.find('span', class_='titulo') else "Sem título"
         link = item.find('a')['href'] if item.find('a') else "#"
         resultado.append({"titulo": titulo, "link": link})
     
