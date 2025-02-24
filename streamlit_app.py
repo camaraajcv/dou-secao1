@@ -1,4 +1,15 @@
- soup = BeautifulSoup(response.text, 'html.parser')
+import requests
+from bs4 import BeautifulSoup
+from datetime import datetime
+
+def get_dou_data(data_str):
+    url = f"https://www.in.gov.br/leiturajornal?secao=dou1&data={data_str}"
+    response = requests.get(url)
+    if response.status_code != 200:
+        print("Erro ao acessar o DOU")
+        return None
+    
+    soup = BeautifulSoup(response.text, 'html.parser')
     
     # Encontrar todas as matérias publicadas
     materias = soup.find_all('div', class_='texto-dou')
