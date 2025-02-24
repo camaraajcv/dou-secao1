@@ -1,5 +1,5 @@
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup4
 from datetime import datetime
 
 def get_dou_data(data_str):
