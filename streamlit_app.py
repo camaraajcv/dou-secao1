@@ -1,12 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+import streamlit as st
 
 def get_dou_data(data_str):
     url = f"https://www.in.gov.br/leiturajornal?secao=dou1&data={data_str}"
     response = requests.get(url)
     if response.status_code != 200:
-        print("Erro ao acessar o DOU")
         return None
     
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -22,12 +22,18 @@ def get_dou_data(data_str):
     
     return resultado
 
-# Teste com a data de hoje
+# Streamlit App
+st.title("Consulta ao Diário Oficial da União - Seção 1")
+
 data_hoje = datetime.today().strftime('%d-%m-%Y')
+st.write(f"Buscando DOU de {data_hoje}...")
+
 materias = get_dou_data(data_hoje)
 
 if materias:
     for i, mat in enumerate(materias[:5]):  # Mostra as 5 primeiras matérias
-        print(f"{i+1}. {mat['titulo']}")
-        print(mat['conteudo'][:500], "...")  # Mostra os primeiros 500 caracteres
-        print("-" * 50)
+        st.subheader(f"{i+1}. {mat['titulo']}")
+        st.write(mat['conteudo'][:500] + "...")  # Mostra os primeiros 500 caracteres
+        st.write("---")
+else:
+    st.error("Erro ao carregar dados do DOU. Tente novamente mais tarde.")
