@@ -16,14 +16,14 @@ def get_dou_data(data_str):
     # Exibir um trecho do HTML para depuração
     html_sample = soup.prettify()[:2000]  # Pegamos os primeiros 2000 caracteres do HTML
     
-    # Encontrar todas as matérias publicadas
-    materias = soup.find_all('div', class_='texto-dou')
+    # Encontrar todos os itens da lista de publicações
+    sumarios = soup.find_all('li', class_='item')
     
     resultado = []
-    for materia in materias:
-        titulo = materia.find_previous('h2').get_text(strip=True) if materia.find_previous('h2') else "Sem título"
-        conteudo = materia.get_text(strip=True)
-        resultado.append({"titulo": titulo, "conteudo": conteudo})
+    for item in sumarios:
+        titulo = item.find('a').get_text(strip=True) if item.find('a') else "Sem título"
+        link = item.find('a')['href'] if item.find('a') else "#"
+        resultado.append({"titulo": titulo, "link": link})
     
     return resultado, response.status_code, html_sample
 
@@ -36,9 +36,9 @@ st.write(f"Buscando DOU de {data_hoje}...")
 materias, status_code, html_sample = get_dou_data(data_hoje)
 
 if materias:
-    for i, mat in enumerate(materias[:5]):  # Mostra as 5 primeiras matérias
+    for i, mat in enumerate(materias[:10]):  # Mostra os 10 primeiros itens
         st.subheader(f"{i+1}. {mat['titulo']}")
-        st.write(mat['conteudo'][:500] + "...")  # Mostra os primeiros 500 caracteres
+        st.markdown(f"[Leia mais]({mat['link']})")  # Adiciona link para a matéria completa
         st.write("---")
 elif status_code:
     st.error(f"Erro ao carregar dados do DOU. Código HTTP: {status_code}")
